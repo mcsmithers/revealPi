@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <title>Top Images</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+    <script src="https://unpkg.com/packery@2/dist/packery.pkgd.min.js"></script>
+
+    <script src="lodash.js"></script>
+
+    <style>
+        .base-styles {
+            color: #fff;
+            position: fixed;
+            font-family: helvetica;
+            text-align: center;
+            position: fixed;
+            z-index: 1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0%;
+        }
+        
+        .fadeout {
+            opacity: 0;
+            /* -webkit-animation: fadeout 1s; */
+            /* Safari, Chrome and Opera > 12.1 */
+            -moz-animation: fadeout 1s;
+            /* Firefox < 16 */
+            -ms-animation: fadeout 1s;
+            /* Internet Explorer */
+            -o-animation: fadeout 1s;
+            /* Opera < 12.1 */
+            animation: fadeout 1s;
+        }
+        
+        #loading-logo {
+            width: auto;
+            max-width: 900px;
+            height: auto;
+            z-index: 1;
+            top: 25%;
+            left: 25%;
+        }
+        
+        @keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        
+        h3 {
+            color: white;
+            bottom: 10px;
+            margin-left: 25px;
+            font-family: "Source Sans Pro", Helvetica, sans-serif;
+        }
+        
+        element.style {
+            display: block;
+            overflow: hidden;
+        }
+        
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        
+        body {
+            overflow-y: hidden;
+            font-family: sans-serif;
+        }
+        
+        .element::-webkit-scrollbar {
+            width: 0 !important
+        }
+        
+        .company-watermark {
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            position: fixed;
+            margin-left: 25px;
+            margin-top: 25px;
+            z-index: 100;
+            visibility: visible;
+        }
+        /* for when bigger logo is loading */
+        
+        .hidden-company-watermark {
+            visibility: hidden;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        /* ---- grid ---- */
+        
+        .grid {
+            padding: 0;
+            width: 3840px;
+            height: 1080px;
+            margin: 0;
+            right: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            box-sizing: border-box;
+            transform: translate3d(0, 0, 0);
+            animation: scrollSideways 60s linear;
+            background-size: cover;
+        }
+        
+        @keyframes scrollSideways {
+            100% {
+                transform: translateX(-50%);
+                transition-delay: 2s;
+            }
+        }
+        
+        .grid:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        /* ---- .grid-item ---- */
+        
+        .grid-item {
+            float: left;
+            width: 90px;
+            height: 90px;
+            box-sizing: border-box;
+            border: 1px solid black;
+            background-size: cover;
+            padding: 0;
+        }
+        
+        .grid-item--1 {
+            width: 90px;
+            height: 90px;
+        }
+        
+        .grid-item--2 {
+            width: 180px;
+            height: 180px;
+        }
+        
+        .grid-item--3 {
+            width: 360px;
+            height: 360px;
+        }
+        
+        .grid-item--4 {
+            width: 540px;
+            height: 540px;
+        }
+        
+        .grid-item--5 {
+            width: 720px;
+            height: 720px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- loader -->
+    <div class="base-styles">
+        <div id="trending-images-loader">
+            <img src="loading-logo.png" id="loading-logo"><br/>
+        </div>
+    </div>
+    <!-- content -->
+    <div class="grid"></div>
+</body>
+<script type="text/javascript">
+    let loader = document.getElementsByClassName('base-styles');
+    const companyLogo = parent.document.getElementsByClassName('company-watermark')[0];
+    const slideTitle = parent.document.getElementsByClassName('title-area')[3];
+    companyLogo.classList.add('hidden-company-watermark');
+    slideTitle.classList.add('hidden-title-area');
+
+    // Setting up for the API calls
+    const today = new Date(new Date().getTime());
+    const todayHours = today.getHours();
+    // Setting up for calculations
+    oneHourInMilliseconds = 3600000;
+    currentHourInMilliseconds = oneHourInMilliseconds * todayHours;
+
+    // Setting up the update rates for the 3 stats
+    conversionUpdateRate = 200;
+
+    // Getting exact time yesterday so data is in past 24 hours
+    const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
+    const fields = "&fields[]=Stat.revenue&fields[]=Stat.affiliate_info4&groups[]=Stat.offer_id&groups[]=Stat.affiliate_id&sort[Stat.revenue]=desc&limit=0";
+    const queryStart = '&data_start=' + yesterday;
+    const queryStop = '&data_end=' + today;
+    const url = 'https://tsh.api.hasoffers.com/Apiv3/json?NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe&Target=Report&Method=getStats' + fields + queryStart + queryStop;
+
+    fetch(url)
+        .then((resp) => resp.json())
+
+    .then(function(data) {
+
+        var jsonData = data.response.data.data;
+
+        Object.keys(jsonData)
+            .forEach(key => {
+                const imageStats = jsonData[key];
+
+                // Let's get each image's info first
+                Object.keys(imageStats)
+                    .forEach(key => {
+                        loader[0].classList.add('fadeout');
+                        companyLogo.classList.remove('hidden-company-watermark');
+                        slideTitle.classList.remove('hidden-title-area');
+
+
+                        const imageInfo = imageStats[key];
+                        var imageUrl = imageInfo.affiliate_info4;
+                        var revenue = parseInt(imageInfo.revenue);
+                        var cleanUrl = decodeURIComponent(imageUrl);
+                        var itemGrid = document.getElementById("grid");
+                        var oddUrl = cleanUrl.includes("%");
+                        // Now let's figure out the revenue per hour
+                        revenuePerHour = revenue / todayHours;
+
+
+                        // console.log(oddUrl);
+
+                        //Some urls are not valid, so those need to get discarded or modified
+                        if (cleanUrl.endsWith(".jpg") == true && oddUrl != true && revenue > 1) {
+                            // console.log(cleanUrl + " has " + revenuePerHour + " revenue per hour");
+                            //Create a new div element
+                            let newDiv = document.createElement('div');
+                            newDiv.className = "grid-item";
+                            newDiv.style.backgroundImage = 'url("' + cleanUrl + '")';
+
+                            // revenue per hour speed up or slow down with the update rate
+                            deltaRevenue = oneHourInMilliseconds / conversionUpdateRate;
+
+                            // FTime to increment the numbers so we can see where the trend is going
+                            incrementRevenue = revenuePerHour / deltaRevenue;
+
+                            // Finally that we have the trend, so we will start showing the numbers changing
+                            const revenueInterval = setInterval(revenueIntervalTimer, conversionUpdateRate);
+
+                            function revenueIntervalTimer() {
+                                countingRevenue = revenue += incrementRevenue;
+                                roundedCountingRevenue = Math.round(countingRevenue);
+                            }
+
+                            if (revenuePerHour >= 75) {
+                                newDiv.classList.add("grid-item--5");
+                            } else if (revenuePerHour >= 50 && revenuePerHour <= 75) {
+                                newDiv.classList.add("grid-item--4");
+                            } else if (revenuePerHour >= 25 && revenuePerHour <= 49) {
+                                newDiv.classList.add("grid-item--3");
+                            } else if (revenuePerHour >= 5 && revenuePerHour <= 25) {
+                                newDiv.classList.add("grid-item--2");
+                            } else if (revenue >= 5 && revenuePerHour <= 1) {
+                                newDiv.classList.add("grid-item--1");
+                            } else {}
+                            // console.log(newDiv.classList + " with a revenue of " + revenuePerHour);
+                            document.querySelector(".grid").appendChild(newDiv);
+                            var pckry = new Packery('.grid', {
+                                itemSelector: '.grid-item',
+                                gutter: 0
+                            });
+
+                        } else if (cleanUrl.endsWith("!-#@500x500") == true && revenuePerHour >= 1) {
+                            fixedUrl = cleanUrl.substring(0, cleanUrl.indexOf('!-#@500x500'));
+                            let newDiv = document.createElement('div');
+                            newDiv.style.backgroundImage = 'url("' + fixedUrl + '")';
+
+                            if (revenuePerHour >= 60) {
+                                newDiv.classList.add("grid-item--5");
+                            } else if (revenuePerHour >= 25 && revenuePerHour <= 50) {
+                                newDiv.classList.add("grid-item--4");
+                            } else if (revenuePerHour >= 15 && revenuePerHour <= 24) {
+                                newDiv.classList.add("grid-item--3");
+                            } else if (revenuePerHour >= 9 && revenuePerHour <= 14) {
+                                newDiv.classList.add("grid-item--2");
+                            } else if (revenue >= 8 && revenuePerHour <= 4) {
+                                newDiv.classList.add("grid-item--1");
+                            } else {}
+                            // console.log(newDiv.classList + "500x500 with a revenue of " + revenuePerHour);
+
+                            // // // Now that sizing is all done, we will put these in the grid
+                            document.querySelector(".grid").appendChild(newDiv);
+                            var pckry = new Packery('.grid', {
+                                itemSelector: '.grid-item',
+                                gutter: 0
+                            });
+
+                        } else {
+                            //console.log("this image url is not valid " + cleanUrl);
+                        }
+
+
+                    })
+            })
+    }).catch(function(error) {
+        console.log(JSON.stringify("Error: " + error));
+    });
+</script>

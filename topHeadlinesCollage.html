@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <title>Top Images</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+    <script src="https://unpkg.com/packery@2/dist/packery.pkgd.min.js"></script>
+
+    <style>
+        .base-styles {
+            color: #fff;
+            position: fixed;
+            font-family: helvetica;
+            text-align: center;
+            position: fixed;
+            z-index: 1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0%;
+        }
+        
+        .fadeout {
+            opacity: 0;
+            /* -webkit-animation: fadeout 1s; */
+            /* Safari, Chrome and Opera > 12.1 */
+            -moz-animation: fadeout 1s;
+            /* Firefox < 16 */
+            -ms-animation: fadeout 1s;
+            /* Internet Explorer */
+            -o-animation: fadeout 1s;
+            /* Opera < 12.1 */
+            animation: fadeout 1s;
+        }
+        
+        #loading-logo {
+            width: auto;
+            max-width: 900px;
+            height: auto;
+            z-index: 1;
+            top: 25%;
+            left: 25%;
+        }
+        
+        @keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        
+        element.style {
+            display: block;
+            overflow: hidden;
+        }
+        
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        
+        body {
+            overflow-y: hidden;
+            font-family: sans-serif;
+        }
+	
+	textarea.noResize {
+            resize: none;
+        }
+        
+        .element::-webkit-scrollbar {
+            width: 0 !important
+        }
+        
+        .company-watermark {
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            position: fixed;
+            margin-left: 25px;
+            margin-top: 25px;
+            z-index: 100;
+            visibility: visible;
+        }
+        /* for when bigger logo is loading */
+        
+        .hidden-company-watermark {
+            visibility: hidden;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        /* ---- grid ---- */
+        
+        .grid {
+            text-align: center;
+            vertical-align: middle;
+            background: #fff;
+            padding: 0;
+            width: 3840px;
+            height: 1080px;
+            padding: 0%;
+            margin: 0;
+            right: 0;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background-size: cover;
+            transform: translate3d(0, 0, 0);
+            animation: scrollSideways 60s linear;
+            transition-delay: 2s;
+        }
+        
+        @keyframes scrollSideways {
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        
+        .grid:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        /* ---- .grid-item ---- */
+        
+	.grid-item {
+            float: left;
+            width: 180px;
+            height: 90px;
+            box-sizing: border-box;
+            border: 1px solid black;
+            background-size: contain, cover;
+            font-size: 20px;
+            word-wrap: break-word;
+            transition: all .5s ease;
+            line-height: 90%;
+            overflow: hidden;
+            text-align: center;
+            vertical-align: middle;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .grid-item--1 {
+            width: 180px;
+            height: 90px;
+            font-size: 20px;
+            text-align: center;
+            vertical-align: middle;
+            word-wrap: break-word;
+            box-sizing: border-box;
+        }
+        
+        .grid-item--2 {
+            text-align: center;
+            vertical-align: middle;
+            width: 180px;
+            height: 90px;
+            font-size: 20px;
+            word-wrap: break-word;
+            box-sizing: border-box;
+        }
+        
+        .grid-item--3 {
+            width: 360px;
+            height: 180px;
+            font-size: 50px;
+            word-wrap: break-word;
+            text-align: center;
+            vertical-align: middle;
+            box-sizing: border-box;
+            text-align: center;
+            vertical-align: middle;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+                
+        .grid-item--3 {
+            width: 360px;
+            height: 180px;
+            font-size: 40px;
+            word-wrap: break-word;
+            text-align: center;
+            vertical-align: middle;
+            box-sizing: border-box;
+            text-align: center;
+            vertical-align: middle;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .grid-item--4 {
+            width: 540px;
+            height: 270px;
+            font-size: 60px;
+            word-wrap: break-word;
+            text-align: center;
+            vertical-align: middle;
+            text-align: center;
+            vertical-align: middle;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .grid-item--5 {
+            width: 720px;
+            height: 360px;
+            font-size: 80px;
+            word-wrap: break-word;
+            text-align: center;
+            vertical-align: middle;
+            box-sizing: border-box;
+            text-align: center;
+            vertical-align: middle;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- loader -->
+    <div class="base-styles">
+        <div id="top-images-loader">
+            <img src="loading-logo.png" id="loading-logo"><br/>
+        </div>
+    </div>
+    <!-- content -->
+    <div class="grid"></div>
+</body>
+
+<script type="text/javascript">
+    let loader = document.getElementsByClassName('base-styles');
+    const companyLogo = parent.document.getElementsByClassName('company-watermark')[0];
+    companyLogo.classList.add('hidden-company-watermark');
+    const slideTitle = parent.document.getElementsByClassName('title-area')[2];
+    slideTitle.classList.add('hidden-title-area');
+
+
+    // Setting up for the API calls
+    const today = new Date(new Date().getTime());
+    const todayHours = today.getHours();
+    const yesterday = new Date(new Date().setDate(new Date().getDate()-1));
+    const fields = "&fields[]=Stat.revenue&fields[]=Stat.affiliate_info4&groups[]=Stat.offer_id&groups[]=Stat.affiliate_id&sort[Stat.revenue]=desc&limit=0";
+    const queryStart = '&data_start=' + yesterday;
+    const queryStop = '&data_end=' + today;
+    const url = 'https://tsh.api.hasoffers.com/Apiv3/json?NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe&Target=Report&Method=getStats' + fields + queryStart + queryStop;
+
+    fetch(url)
+        .then((resp) => resp.json())
+
+    .then(function(data) {
+
+        var jsonData = data.response.data.data;
+
+        Object.keys(jsonData)
+            .forEach(key => {
+                const headlineStats = jsonData[key];
+
+                // Let's get each headline's info first
+                Object.keys(headlineStats)
+                    .forEach(key => {
+                        loader[0].classList.add('fadeout');
+                        companyLogo.classList.remove('hidden-company-watermark');
+                        slideTitle.classList.remove('hidden-title-area');
+
+                        const headlineInfo = headlineStats[key];
+                        var headlineUrl = headlineInfo.affiliate_info4;
+                        var revenue = parseInt(headlineInfo.revenue);
+                        var cleanUrl = decodeURIComponent(headlineUrl);
+                        var itemGrid = document.getElementById("grid");
+                        var str = cleanUrl;
+                        readableStr = str.replace(/[^a-zA-Z ]/g, " ");
+
+                        //Some urls are not valid, so those need to get discarded or modified
+                        if (cleanUrl.startsWith("http") != true && cleanUrl != "") {
+                            // console.log(str + " brought " + revenue);
+                            //Create a new div element
+                            let newDiv = document.createElement('div');
+                            let colors = ['#feebe2', '#fcc5c0', '#fa9fb5', '#f768a1', '#c51b8a', '#7a0177'];
+                            var randomColor = Math.floor(Math.random() * colors.length);
+                            newDiv.className = "grid-item";
+                            newDiv.textContent = readableStr;
+                            newDiv.style.backgroundColor = colors[randomColor];
+
+                            if (revenue >= 150) {
+                                newDiv.classList.add("grid-item--5");
+                            } else if (revenue <= 150 && revenue > 75) {
+                                newDiv.classList.add("grid-item--4");
+                            } else if (revenue <= 74 && revenue > 50) {
+                                newDiv.classList.add("grid-item--3");
+                            } else if (revenue <= 49 && revenue > 20) {
+                                newDiv.classList.add("grid-item--2");
+                            } else if (revenue <= 20 && revenue > -1) {
+                                newDiv.classList.add("grid-item--1");
+                            } else {}
+                            // Now that sizing is all done, we will put these in the grid and have packery make it look cool
+                            document.querySelector(".grid").appendChild(newDiv);
+                            // console.log(newDiv.classList + " representing " + str + " brought " + revenue);
+                            var pckry = new Packery('.grid', {
+                                itemSelector: '.grid-item',
+                                gutter: 0
+                            });
+                        } else {
+                            // console.log("this headline url is not valid " + cleanUrl);
+                        }
+
+                    })
+            })
+    }).catch(function(error) {
+        console.log(JSON.stringify("Error: " + error));
+    });
+</script>

@@ -1,0 +1,65 @@
+{
+    "name": "Slides",
+    "version": "3.6.0",
+    "description": "slideshow to show hasoffers stats",
+    "homepage": "",
+    "subdomain": "revealjs",
+    "main": "js/reveal.js",
+    "scripts": {
+        "test": "grunt test",
+        "start": "grunt serve",
+        "build": "grunt"
+    },
+    "author": {
+        "name": "Christina Smithers is the presenation author.  RevealJS author is Hakim El Hattab",
+        "email": "Presenations: christina@tapstone.com  RevealJS author email: hakim.elhattab@gmail.com",
+        "web": "Tapstone: http://tapstone.com  RevealJS: http://hakim.se"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/hakimel/reveal.js.git"
+    },
+    "engines": {
+        "node": ">=4.0.0"
+    },
+    "devDependencies": {
+        "express": "^4.16.3",
+        "grunt": "^1.0.1",
+        "grunt-autoprefixer": "^3.0.4",
+        "grunt-cli": "^1.2.0",
+        "grunt-contrib-connect": "^1.0.2",
+        "grunt-contrib-cssmin": "^2.1.0",
+        "grunt-contrib-jshint": "^1.1.0",
+        "grunt-contrib-qunit": "~1.2.0",
+        "grunt-contrib-uglify": "^2.3.0",
+        "grunt-contrib-watch": "^1.0.0",
+        "grunt-http": "^2.3.1",
+        "grunt-retire": "^1.0.7",
+        "grunt-sass": "^2.0.0",
+        "grunt-zip": "~0.17.1",
+        "mustache": "^2.3.0",
+        "socket.io": "^1.7.3"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "babel-core": "^6.26.0",
+        "babel-preset-es2015": "^6.24.1",
+        "babelify": "^8.0.0",
+        "browserify": "^16.1.1",
+        "d3-array": "^1.2.1",
+        "d3-fetch": "^1.1.0",
+        "d3-svg-legend": "^2.25.6",
+        "datamaps": "^0.5.8",
+        "fscreen": "^1.0.2",
+        "install": "^0.11.0",
+        "isotope-layout": "^3.0.5",
+        "lodash": "^4.17.5",
+        "npm": "^5.8.0",
+        "request": "^2.85.0",
+        "request-promise": "^4.2.2",
+        "reveal_external": "^1.3.0",
+        "reveald3": "^1.4.0",
+        "simple-weather": "^1.2.2",
+        "unsplash-js": "^4.8.0"
+    }
+}

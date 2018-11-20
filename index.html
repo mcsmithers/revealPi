@@ -1,0 +1,521 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <title>Tapstone Stats</title>
+
+    <!-- watermarks styling -->
+    <style>
+
+        * {
+            cursor: none !important;
+        }
+        
+        body {
+            background-color: white;
+        }
+        
+        .company-watermark {
+            width: 110%;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            position: fixed;
+            left: 25px;
+            top: 25px;
+            z-index: 100;
+        }
+
+        /* for when bigger logo is loading */
+                .hidden-company-watermark {
+            display: none;
+        }
+        
+        .watermark {
+            position: fixed;
+            right: 25px;
+            bottom: 0;
+            margin-right: 25px;
+            margin-bottom: 25px;
+            color: white;
+            font-family: "Source Sans Pro", Helvetica, sans-serif;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            z-index: 100;
+        }
+        
+        .time-area {
+            font-size: 70px;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+        }
+        
+        .degree-symbol {
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            font-size: 36px;
+        }
+        /* for a font-awesome weather icon in place of the openweather api ones */
+        
+        .wi {
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            margin-right: 20px;
+            color: white;
+            font-size: 36px;
+        }
+        
+        .temperature-area {
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            font-size: 36px;
+        }
+        
+        .date-area {
+            color: white;
+            font-family: "Source Sans Pro", Helvetica, sans-serif;
+            visibility: invisible;
+        }
+        
+        .title-area {
+            font-size: 65px;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .75)) !important;
+            color: white;
+            left: 25px;
+            bottom: 25px;
+        }
+
+        /* for when images/headlines load to hide the title for better ui */        
+        .hidden-title-area {
+            display: none;
+        }
+        
+        #clicks-area {
+            color: white;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            font-size: 36px;
+        }
+        
+        #conversions-area {
+            color: white;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            font-size: 36px;
+        }
+        
+        #impressions-area {
+            color: white;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
+            font-size: 36px;
+        }
+    </style>
+
+    <meta name="description" content="Our daily stats">
+    <meta name="author" content="Tapstone">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/white.css" id="theme">
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <!-- so we have better icons than the standard defaults in open weather -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/font/weathericons-regular-webfont.svg">
+
+    <!--scripts-->
+    <script src="lib/js/head.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="js/reveal.js"></script>
+    <!-- packery getting loaded now to make things faster -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/packery/2.1.1/packery.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/then-request/2.2.0/request.js"></script>
+    <script src="http://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+    <script src="lodash.js"></script>
+
+</head>
+
+<body>
+
+    <div class="reveal" id="reveal-component">
+
+        <!-- Any section element inside of this container is displayed as a slide -->
+        <div class="slides">
+
+            <section data-external="clickConversionImpressionStats.html">
+            </section>
+
+            <section data-external="topImages.html">
+            </section>
+
+            <section data-external="pics.html"></section>
+
+            <section data-external="topHeadlines.html">
+            </section>
+
+            <section data-external="pics.html"></section>
+
+            <section data-external="trendingImages.html">
+            </section>
+
+            <section data-external="pics.html"></section>
+
+            <section data-external="webPage.html">
+            </section>
+
+            <section data-external="pics.html"></section>
+
+            <section data-external="trendingHeadlines.html">
+            </section>
+
+            <section data-external="pics.html"></section>
+
+            <section data-external="traffic.html">
+            </section>
+
+            <section data-external="pics.html"></section>
+
+            <section data-external="revenue.html">
+            </section>
+
+            <section data-external="pics.html"></section>
+
+        </div>
+
+        <!-- weather/time watermark -->
+        <div class="watermark" style="margin-right: 25px; margin-bottom: 35px;">
+            <span class="temperature-area" style="filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5))"></span><span class="degree-symbol">°</span></span>
+            <i class="weather-area" style="filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5)) "></i>
+            <span class="time-area" style="filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5)); font-size:70px;"></span>
+        </div>
+        <!-- company watermark -->
+        <div class="company-watermark" style="width: 80px; filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5)); position: fixed; margin-left: 27px; margin-top: 25px; z-index: 100;">
+            <img src="smallLogo.png" alt="logo" style="width: 80px;">
+        </div>
+        <!-- end of reveal components   -->
+    </div>
+
+    <script>
+
+        // get dates to make calls
+        const today = new Date(new Date().getTime());
+        // Setting up for the API calls and other stuff we need for the whole application
+        // Getting exact time 24 hours ago yesterday so data is in past 24 hours
+        const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
+        const todayHours = today.getHours();
+        var dt = new Date();
+
+        /*********************************************************************
+         * Weather, time and conditions
+         *********************************************************************/
+        key = '&APPID=35b89c68d3405c3bb08f081132392798';
+        weatherUrl = 'http://api.openweathermap.org/data/2.5/weather?zip=90212' + key;
+
+        fetch(weatherUrl)
+            .then((resp) => resp.json())
+
+        .then(function(data) {
+
+                // Get the time to show
+                function formatMinute(i) {
+                    // Add a zero in front of numbers < 10
+                    if (i < 10) {
+                        i = "0" + i;
+                    }
+                    return i;
+                }
+
+
+
+                function checkTimeAndDate() {
+                    // Make a traditional time interface with hh:mm
+                    var time = new Date();
+                    var h = time.getHours();
+                    var m = time.getMinutes();
+                    if (h >= 12) {
+                        h = h - 12;
+                    }
+                    if (h == 0) {
+                        h = 12;
+                    }
+                    m = formatMinute(m);
+                    document.getElementsByClassName('time-area')[0].innerHTML = h + ":" + m;
+                    t = setTimeout(function() {
+                        checkTimeAndDate()
+                    }, 500);
+
+                    var formattedDate = new Date(),
+                        date = formattedDate.getDate(),
+                        weekdays = "Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday".split(",")[formattedDate.getDay()],
+                        month = "January,February,March,April,May,June,July,August,September,October,November,December"
+                        .split(",")[formattedDate.getMonth()];
+
+                    function nth(d) {
+                        if (d > 3 && d < 21) return 'th'; // thanks kennebec
+                        switch (d % 10) {
+                            case 1:
+                                return "st";
+                            case 2:
+                                return "nd";
+                            case 3:
+                                return "rd";
+                            default:
+                                return "th";
+                        }
+                    }
+                    theDate = weekdays + ", " + month + " " + date + nth(date);
+
+                    document.getElementsByClassName('date-area')[0].innerHTML = theDate;
+
+
+                }
+                checkTimeAndDate();
+
+                // Now let's get the weather temperature and conditions
+                var rawJsonData = JSON.stringify(data);
+                var json = JSON.parse(rawJsonData);
+
+                function updateWeather() {
+                    // Temperature
+                    const temperatureArea = document.getElementsByClassName('temperature-area');
+                    const kTemp = parseInt(json.main.temp);
+                    // Change the temp from Kelvin to Fahrenheit
+                    intKTemp = parseFloat(kTemp);
+                    const fTemp = parseInt((intKTemp - 273.15) * 1.8) + 32;
+                    temperatureArea[0].innerHTML = fTemp;
+
+                    // Get the better icons
+                    const code = data.weather[0].id;
+                    const prefix = "wi wi-owm-";
+                    const icon = prefix + code;
+                    const weatherArea = document.createElement("i");
+                    document.getElementsByClassName("weather-area")[0].setAttribute("class", icon);
+
+                }
+                document.readyState = updateWeather();
+
+                window.show = document.getElementsByClassName('watermark');
+                // window.show = document.getElementsByClassName('company-watermark');
+            })
+            .catch(function(error) {
+                console.log(JSON.stringify("Error: " + error));
+            });
+
+
+        /***************************************************************
+         * HasOffers API - testing lodaing scattering
+         ***************************************************************/
+        const fields = "&Target=Report&Method=getStats&fields[]=Stat.conversions&fields[]=Stat.clicks&fields[]=Stat.impressions";
+        const queryStart = '&data_start=' + yesterday;
+        const queryStop = '&data_end=' + today;
+        const url = 'https://api.hasoffers.com/Apiv3/json?NetworkId=tsh&NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe' + fields + queryStart + queryStop;
+
+        // Setting up for calculations
+        oneHourInMilliseconds = 3600000;
+        currentHourInMilliseconds = oneHourInMilliseconds * todayHours;
+
+        // Setting up the update rates for the 3 stats
+        clickUpdateRate = 200;
+        conversionUpdateRate = 400;
+        impressionUpdateRate = 150;
+
+        // This is going to be refactored probably
+        fetch(url)
+            .then((resp) => resp.json())
+            .then(function(data) {
+                const jsonData = data.response.data.data;
+
+                Object.keys(jsonData)
+                    .forEach(key => {
+                        const stats = jsonData[key];
+
+                        Object.keys(stats)
+                            .forEach(statsKey => {
+
+
+                                /***************************************************************
+                                 * Analyze the data
+                                 ***************************************************************/
+
+                                const statsWeWillSee = stats[statsKey];
+
+                                // Convert text into a JavaScript object
+                                currentClicks = parseInt(statsWeWillSee.clicks);
+                                currentConversions = parseInt(statsWeWillSee.conversions);
+                                currentImpressions = currentClicks * 987;
+
+                                // Now let's figure out the clicks per hour
+                                clicksPerHour = currentClicks / todayHours;
+                                conversionsPerHour = currentConversions / todayHours;
+                                impressionsPerHour = currentClicks / todayHours;
+
+                                // Clicks per hour speed up or slow down with the update rate
+                                deltaClicks = oneHourInMilliseconds / clickUpdateRate;
+                                deltaConversions = oneHourInMilliseconds / conversionUpdateRate;
+                                deltaImpressions = oneHourInMilliseconds / clickUpdateRate;
+
+                                // FTime to increment the numbers so we can see where the trend is going
+                                incrementClicks = clicksPerHour / deltaClicks;
+                                incrementConversions = conversionsPerHour / deltaConversions;
+                                incrementImpressions = clicksPerHour / deltaImpressions;
+
+                                // Finally that we have the trend, so we will start showing the numbers changing
+                                const clicksInterval = setInterval(clicksIntervalTimer, clickUpdateRate);
+
+                                function clicksIntervalTimer() {
+                                    const clicksArea = document.getElementById('clicks-area');
+                                    countingClicks = currentClicks += incrementClicks;
+                                    roundedCountingClicks = Math.round(countingClicks);
+                                    formattedRoundCountClicks = roundedCountingClicks.toLocaleString();
+                                    clicksArea.innerHTML = formattedRoundCountClicks;
+                                    document.getElementById("clicks-area").innerHTML;
+                                }
+
+                                const conversionsInterval = setInterval(conversionsIntervalTimer, conversionUpdateRate);
+
+                                function conversionsIntervalTimer() {
+                                    const conversionsArea = document.getElementById('conversions-area');
+                                    countingConversions = currentConversions += incrementConversions;
+                                    roundedCountingConversions = Math.round(countingConversions);
+                                    formattedRoundCountConversions = roundedCountingConversions.toLocaleString();
+                                    conversionsArea.innerHTML = formattedRoundCountConversions;
+                                    document.getElementById("conversions-area").innerHTML;
+                                }
+
+
+                                const impressionsInterval = setInterval(impressionsIntervalTimer, impressionUpdateRate);
+
+                                function impressionsIntervalTimer() {
+                                    const impressionsArea = document.getElementById('impressions-area');
+                                    countingImpressions = currentImpressions += incrementImpressions;
+                                    roundedCountingImpressions = Math.round(countingImpressions);
+                                    formattedRoundCountImpressions = roundedCountingImpressions.toLocaleString();
+                                    impressionsArea.innerHTML = formattedRoundCountImpressions;
+                                    document.getElementById("impressions-area").innerHTML;
+                                }
+
+                            })
+                    })
+
+                /***************************************************************
+                 * Test the data
+                 ***************************************************************/
+                function updateStats() {
+                    console.log("Stats updated...");
+                    // console.log("------------------------------------");
+                    // console.log("Time");
+                    // console.log("------------------------------------");
+                    // console.log("Today in hours is " + todayHours);
+                    // console.log("One hour in milliseconds is " + oneHourInMilliseconds);
+                    // console.log("------------------------------------");
+                    // console.log("Clicks");
+                    // console.log("------------------------------------");
+                    // console.log("Total clicks so far today are : " + currentClicks.toLocaleString());
+                    // console.log("Estimated hourly clicks are " + clicksPerHour);
+                    // console.log("Click update rate is " + clickUpdateRate);
+                    // console.log("Click update delta is " + deltaClicks);
+                    // console.log("Click update increment is " + incrementClicks);
+                    // console.log("------------------------------------");
+                    // console.log("Conversions");
+                    // console.log("------------------------------------");
+                    // console.log("Total conversions so far today are : " + currentConversions.toLocaleString());
+                    // console.log("Estimated hourly conversions are " + conversionsPerHour);
+                    // console.log("Conversion update rate is " + clickUpdateRate);
+                    // console.log("Conversion update delta is " + deltaConversions);
+                    // console.log("Conversion update increment is " + incrementConversions);
+                    // console.log("------------------------------------");
+                    // console.log("Impressions");
+                    // console.log("------------------------------------");
+                    // console.log("Total clicks so far today are : " + currentImpressions.toLocaleString());
+                    // console.log("Estimated hourly impressions are " + impressionsPerHour);
+                    // console.log("Click update rate is " + impressionUpdateRate);
+                    // console.log("Click update delta is " + deltaImpressions);
+                    // console.log("Click update increment is " + incrementImpressions);
+                    // console.log("------------------------------------");
+
+                }
+
+                window.onload = updateStats();
+            })
+            .catch(function(error) {
+                console.log(JSON.stringify(error));
+            });
+
+        // And now we can refresh and reset
+        var minute = new Date().getMinutes(),
+            nextRefresh = (60 - (minute % 30)) * 60 * 1000;
+
+        setTimeout(function() {
+            location.reload();
+        }, nextRefresh); 
+    </script>
+
+    <script>
+        // Slideshow config
+        Reveal.initialize({
+            width: 1920,
+            height: 1080,
+            margin: 0,
+            minScale: 1,
+            maxScale: 1,
+            autoSlide: 5000,
+            autoSlideStoppable: true,
+            autoPlayMedia: true,
+            controls: false,
+            history: true,
+            center: true,
+            loop: true,
+            transition: 'fade', // none/fade/slide/convex/concave/zoom
+
+            reveald3: {
+                runLastState: true, //default true
+                keepIframe: false, // default: false
+                mapPath: false, // default: false
+                tryFallbackURL: false, //default false
+            },
+
+            //Reveal's deps
+            dependencies: [{
+                    src: 'lib/js/classList.js',
+                    condition: function() {
+                        return !document.body.classList;
+                    }
+                }, {
+                    src: '/node_modules/reveald3/reveald3.js'
+
+                }, {
+                    src: '/node_modules/reveald3/demo/d3-fig/d3.v4.min.js'
+
+                }, {
+                    src: '/node_modules/reveald3/demo/d3-fig/js/d3.v4.min.js'
+                },
+
+                //external to make individal slide html files
+                {
+                    src: 'node_modules/reveal_external/external/external.js',
+                    condition: function() {
+                        return !!document.querySelector('[data-external],[data-external-replace]');
+                    }
+                }, {
+                    src: 'plugin/markdown/marked.js',
+                    condition: function() {
+                        return !!document.querySelector('[data-markdown]');
+                    }
+                }, {
+                    src: 'plugin/markdown/markdown.js',
+                    condition: function() {
+                        return !!document.querySelector('[data-markdown]');
+                    }
+                }, {
+                    src: 'plugin/highlight/highlight.js',
+                    async: true,
+                    callback: function() {
+                        hljs.initHighlightingOnLoad();
+                    }
+                }
+
+            ]
+        });
+    </script>
+
+</body>
+
+</html>

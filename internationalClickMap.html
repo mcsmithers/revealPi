@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <title>Global Clicks</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+    <script src="datamaps.world.hires.min.js"></script>
+    <script src="lodash.js"></script>
+    <script src="https://d3js.org/colorbrewer.v1.min.js"></script>
+    <style>
+        body {
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+        
+        .datamaps-legend dt {
+            clear: both;
+            font-size: 25px;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5));
+            float: none;
+            padding-right: 10px;
+            width: 120px;
+            text-align: left;
+        }
+        
+        .datamaps-legend dl {
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .datamaps-legend dd {
+            text-align: center;
+            display: inline-block;
+            margin-left: 10px;
+            padding: 5px;
+        }
+        
+        .datamaps-legend {
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5));
+            color: white;
+            margin-top: 775px;
+            margin-left: 45px;
+            font-family: "Source Sans Pro", Helvetica, sans-serif;
+            position: static;
+            display: inline-block;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- content -->
+    <div id="container" style="background-size: cover; min-height: 1080px; min-width: 1600px; position: relative; overflow: visible; padding: 0; bottom: 25px"></div>
+</body>
+
+<script>
+    const today = new Date(new Date().getTime());
+    const todayHours = today.getHours();
+    // Getting exact time yesterday so data is in past 24 hours
+    const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
+    const fieldsFiltersAndGrouping = "&Target=Report&Method=getStats&fields[]=Stat.country_code&fields[]=Stat.clicks&filters[Stat.clicks][conditional]=GREATER_THAN&filters[Stat.clicks][values]=0&sort[Stat.country_code]=asc&limit=0";
+    const queryStart = '&data_start=' + yesterday;
+    const queryStop = '&data_end=' + today;
+    const url = 'https://api.hasoffers.com/Apiv3/json?NetworkId=tsh&NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe' + fieldsFiltersAndGrouping + queryStart + queryStop;
+
+    fetch(url)
+        .then((resp) => resp.json())
+
+    .then(function(data) {
+        var jsonData = data.response.data.data;
+        //console.log(jsonData);
+
+        max = d3.max(jsonData.map(a => Number(a.Stat.clicks)));
+        // console.log(max);
+        min = d3.min(jsonData.map(a => Number(a.Stat.clicks)));
+        // console.log(min);
+        mean = d3.mean(jsonData.map(a => Number(a.Stat.clicks)));
+        // console.log("twicemean " + twiceMean);
+
+        var colors = d3.scale.threshold()
+            .range(['defaultFill', 'Low', 'MedLo', 'Medium', 'MedHi', 'High'])
+            .domain([min, 1000, 10000, 50000, max]);
+
+        // var colors = d3.scale.threshold()
+        //     .range(['Low', 'Medium', 'High'])
+        //     .domain([min, max]);
+
+        var fills = {
+            High: '#3f007d',
+            MedHi: '#54278f',
+            Medium: '#6a51a3',
+            MedLo: '#807dba',
+            Low: '#9e9ac8',
+            defaultFill: '#fcfbfd'
+        }
+
+        function intToColor(integer) {
+            const key = "color" + integer.toString();
+            fills[key] = colors(integer);
+            return key
+        }
+
+        var mapOfCodes = {
+            "AF": "AFG",
+            "AL": "ALB",
+            "DZ": "DZA",
+            "AS": "ASM",
+            "AD": "AND",
+            "AO": "AGO",
+            "AI": "AIA",
+            "AQ": "ATA",
+            "AG": "ATG",
+            "AR": "ARG",
+            "AM": "ARM",
+            "AW": "ABW",
+            "AU": "AUS",
+            "AT": "AUT",
+            "AZ": "AZE",
+            "BS": "BHS",
+            "BH": "BHR",
+            "BD": "BGD",
+            "BB": "BRB",
+            "BY": "BLR",
+            "BE": "BEL",
+            "BZ": "BLZ",
+            "BJ": "BEN",
+            "BM": "BMU",
+            "BT": "BTN",
+            "BO": "BOL",
+            "BA": "BIH",
+            "BW": "BWA",
+            "BV": "BVT",
+            "BR": "BRA",
+            "IO": "IOT",
+            "BN": "BRN",
+            "BG": "BGR",
+            "BF": "BFA",
+            "BI": "BDI",
+            "KH": "KHM",
+            "CM": "CMR",
+            "CA": "CAN",
+            "CV": "CPV",
+            "KY": "CYM",
+            "CF": "CAF",
+            "TD": "TCD",
+            "CL": "CHL",
+            "CN": "CHN",
+            "CX": "CXR",
+            "CC": "CCK",
+            "CO": "COL",
+            "KM": "COM",
+            "CG": "COG",
+            "CK": "COK",
+            "CR": "CRI",
+            "CI": "CIV",
+            "HR": "HRV",
+            "CU": "CUB",
+            "CY": "CYP",
+            "CZ": "CZE",
+            "DK": "DNK",
+            "DJ": "DJI",
+            "DM": "DMA",
+            "DO": "DOM",
+            "TP": "TMP",
+            "EC": "ECU",
+            "EG": "EGY",
+            "SV": "SLV",
+            "GQ": "GNQ",
+            "ER": "ER",
+            "EE": "EST",
+            "ET": "ETH",
+            "FK": "FLK",
+            "FO": "FRO",
+            "FJ": "FJI",
+            "FI": "FIN",
+            "FR": "FRA",
+            "FX": "FXX",
+            "GF": "GUF",
+            "PF": "PYF",
+            "TF": "ATF",
+            "GA": "GAB",
+            "GM": "GMB",
+            "GE": "GEO",
+            "DE": "DEU",
+            "GH": "GHA",
+            "GI": "GIB",
+            "GR": "GRC",
+            "GL": "GRL",
+            "GD": "GRD",
+            "GP": "GLP",
+            "GU": "GUM",
+            "GT": "GTM",
+            "GN": "GIN",
+            "GW": "GNB",
+            "GY": "GUY",
+            "HT": "HTI",
+            "HM": "HMD",
+            "VA": "VAT",
+            "HN": "HND",
+            "HK": "HKG",
+            "HU": "HUN",
+            "IS": "ISL",
+            "IN": "IND",
+            "ID": "IDN",
+            "IR": "IRN",
+            "IQ": "IRQ",
+            "IE": "IRL",
+            "IL": "ISR",
+            "IT": "ITA",
+            "JM": "JAM",
+            "JP": "JPN",
+            "JO": "JOR",
+            "KZ": "KAZ",
+            "KE": "KEN",
+            "KI": "KIR",
+            "KP": "PRK",
+            "KR": "KOR",
+            "KW": "KWT",
+            "KG": "KGZ",
+            "LA": "LAO",
+            "LV": "LVA",
+            "LB": "LBN",
+            "LS": "LSO",
+            "LR": "LBR",
+            "LY": "LBY",
+            "LI": "LIE",
+            "LT": "LTU",
+            "LU": "LUX",
+            "MO": "MAC",
+            "MK": "MKD",
+            "MG": "MDG",
+            "MW": "MWI",
+            "MY": "MYS",
+            "MV": "MDV",
+            "ML": "MLI",
+            "MT": "MLT",
+            "MH": "MHL",
+            "MQ": "MTQ",
+            "MR": "MRT",
+            "MU": "MUS",
+            "YT": "MYT",
+            "MX": "MEX",
+            "FM": "FSM",
+            "MD": "MDA",
+            "MC": "MCO",
+            "MN": "MNG",
+            "MS": "MSR",
+            "MA": "MAR",
+            "MZ": "MOZ",
+            "MM": "MMR",
+            "NA": "NAM",
+            "NR": "NRU",
+            "NP": "NPL",
+            "NL": "NLD",
+            "AN": "ANT",
+            "NC": "NCL",
+            "NZ": "NZL",
+            "NI": "NIC",
+            "NE": "NER",
+            "NG": "NGA",
+            "NU": "NIU",
+            "NF": "NFK",
+            "MP": "MNP",
+            "NO": "NOR",
+            "OM": "OMN",
+            "PK": "PAK",
+            "PW": "PLW",
+            "PA": "PAN",
+            "PG": "PNG",
+            "PY": "PRY",
+            "PE": "PER",
+            "PH": "PHL",
+            "PN": "PCN",
+            "PL": "POL",
+            "PT": "PRT",
+            "PR": "PRI",
+            "QA": "QAT",
+            "RE": "REU",
+            "RO": "ROM",
+            "RU": "RUS",
+            "RW": "RWA",
+            "KN": "KNA",
+            "LC": "LCA",
+            "VC": "VCT",
+            "WS": "WSM",
+            "SM": "SMR",
+            "ST": "STP",
+            "SA": "SAU",
+            "SN": "SEN",
+            "SC": "SYC",
+            "SL": "SLE",
+            "SG": "SGP",
+            "SK": "SVK",
+            "SI": "SVN",
+            "SB": "SLB",
+            "SO": "SOM",
+            "ZA": "ZAF",
+            "GS": "SGS",
+            "ES": "ESP",
+            "LK": "LKA",
+            "SH": "SHN",
+            "PM": "SPM",
+            "SD": "SDN",
+            "SR": "SUR",
+            "SJ": "SJM",
+            "SZ": "SWZ",
+            "SE": "SWE",
+            "CH": "CHE",
+            "SY": "SYR",
+            "TW": "TWN",
+            "TJ": "TJK",
+            "TZ": "TZA",
+            "TH": "THA",
+            "TG": "TGO",
+            "TK": "TKL",
+            "TO": "TON",
+            "TT": "TTO",
+            "TN": "TUN",
+            "TR": "TUR",
+            "TM": "TKM",
+            "TC": "TCA",
+            "TV": "TUV",
+            "UG": "UGA",
+            "UA": "UKR",
+            "AE": "ARE",
+            "UK": "GBR",
+            "US": "USA",
+            "UM": "UMI",
+            "UY": "URY",
+            "UZ": "UZB",
+            "VU": "VUT",
+            "VE": "VEN",
+            "VN": "VNM",
+            "VG": "VGB",
+            "VI": "VIR",
+            "WF": "WLF",
+            "EH": "ESH",
+            "YE": "YEM",
+            "YU": "YUG",
+            "ZR": "ZAR",
+            "ZM": "ZMB",
+            "ZW": "ZWE"
+        }
+
+        function cleanCountryCode(twoCharCode) {
+            return mapOfCodes[twoCharCode]
+        }
+
+        function convertDataToDatamapData(jsonData) {
+            // Have a map ofoptions for colors
+            var h = {}
+            _.each(jsonData, function(el) {
+                const clicks = _.toInteger(el["Stat"]["clicks"])
+                const countryCode = cleanCountryCode(el["Stat"]["country_code"])
+                    // console.log(countryCode + " has " + clicks + " clicks");
+                h[countryCode] = {
+                    fillKey: colors(clicks)
+                }
+            })
+            console.log(h);
+            return h
+        }
+
+        var data = convertDataToDatamapData(jsonData);
+
+
+        var basic_choropleth = new Datamap({
+            element: document.getElementById("container"),
+            projection: 'equirectangular',
+            fills: fills,
+            // Draw a legend for this map
+            geographyConfig: {
+                borderColor: '#000000'
+            },
+            data: data,
+        });
+        basic_choropleth.legend({
+            legendTitle: "",
+            defaultFillName: "0",
+            labels: {
+                High: '> 100,000',
+                MedHi: '> 50,000',
+                Medium: '> 10,000',
+                MedLo: '> 1,000',
+                Low: '> 1',
+                defaultFill: '0'
+            },
+        });
+
+    })
+</script>
+
+</html>
