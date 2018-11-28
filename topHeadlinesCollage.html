@@ -66,7 +66,7 @@
             font-family: sans-serif;
         }
 	
-	textarea.noResize {
+	    textarea.noResize {
             resize: none;
         }
         
@@ -182,8 +182,8 @@
         }
                 
         .grid-item--3 {
-            width: 360px;
-            height: 180px;
+            width: 540px;
+            height: 270px;
             font-size: 40px;
             word-wrap: break-word;
             text-align: center;
@@ -197,8 +197,8 @@
         }
         
         .grid-item--4 {
-            width: 540px;
-            height: 270px;
+            width: 620px;
+            height: 360px;
             font-size: 60px;
             word-wrap: break-word;
             text-align: center;
@@ -212,7 +212,7 @@
         
         .grid-item--5 {
             width: 720px;
-            height: 360px;
+            height: 480px;
             font-size: 80px;
             word-wrap: break-word;
             text-align: center;
@@ -233,7 +233,7 @@
     <!-- loader -->
     <div class="base-styles">
         <div id="top-images-loader">
-            <img src="loading-logo.png" id="loading-logo"><br/>
+            <img src="loading-logo.png" id="loading-logo"><br />
         </div>
     </div>
     <!-- content -->
@@ -241,84 +241,105 @@
 </body>
 
 <script type="text/javascript">
-    let loader = document.getElementsByClassName('base-styles');
-    const companyLogo = parent.document.getElementsByClassName('company-watermark')[0];
-    companyLogo.classList.add('hidden-company-watermark');
-    const slideTitle = parent.document.getElementsByClassName('title-area')[2];
-    slideTitle.classList.add('hidden-title-area');
+    //let loader = document.getElementsByClassName('base-styles');
+    let loader = $('.base-styles');
+    //const companyLogo = parent.document.getElementsByClassName('company-watermark')[0];
+    const companyLogo = $('.company-watermark');
+    companyLogo.addClass('hidden-company-watermark');
+    //const slideTitle = parent.document.getElementsByClassName('title-area')[2];
+    const slideTitle = $('.title-area');
+    slideTitle.addClass('hidden-title-area');
 
 
     // Setting up for the API calls
+    function formatDate(date) {
+        const d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
     const today = new Date(new Date().getTime());
     const todayHours = today.getHours();
-    const yesterday = new Date(new Date().setDate(new Date().getDate()-1));
-    const fields = "&fields[]=Stat.revenue&fields[]=Stat.affiliate_info4&groups[]=Stat.offer_id&groups[]=Stat.affiliate_id&sort[Stat.revenue]=desc&limit=0";
-    const queryStart = '&data_start=' + yesterday;
-    const queryStop = '&data_end=' + today;
-    const url = 'https://tsh.api.hasoffers.com/Apiv3/json?NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe&Target=Report&Method=getStats' + fields + queryStart + queryStop;
+    const yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
+    const fields =
+        "&fields[]=Stat.affiliate_id&fields[]=Stat.revenue&fields[]=Stat.affiliate_info4&filters[Stat.revenue][conditional]=GREATER_THAN&filters[Stat.revenue][values]=0&limit=1000000000&page=1";
+    const queryStart = '&data_start=' + formatDate(yesterday);
+    const queryStop = '&data_end=' + formatDate(today);
+    const url =
+        'https://tsh.api.hasoffers.com/Apiv3/json?NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe&Target=Report&Method=getStats' +
+        fields + queryStart + queryStop;
 
     fetch(url)
         .then((resp) => resp.json())
 
-    .then(function(data) {
+        .then(function (data) {
 
-        var jsonData = data.response.data.data;
+            const jsonData = data.response.data.data;
+            //console.log(JSON.stringify(jsonData));
 
-        Object.keys(jsonData)
-            .forEach(key => {
-                const headlineStats = jsonData[key];
+            Object.keys(jsonData)
+                .forEach(key => {
+                    const headlineStats = jsonData[key];
 
-                // Let's get each headline's info first
-                Object.keys(headlineStats)
-                    .forEach(key => {
-                        loader[0].classList.add('fadeout');
-                        companyLogo.classList.remove('hidden-company-watermark');
-                        slideTitle.classList.remove('hidden-title-area');
+                    // Let's get each headline's info first
+                    Object.keys(headlineStats)
+                        .forEach(key => {
+                            loader.addClass('fadeout');
+                            companyLogo.remove('hidden-company-watermark');
+                            slideTitle.remove('hidden-title-area');
 
-                        const headlineInfo = headlineStats[key];
-                        var headlineUrl = headlineInfo.affiliate_info4;
-                        var revenue = parseInt(headlineInfo.revenue);
-                        var cleanUrl = decodeURIComponent(headlineUrl);
-                        var itemGrid = document.getElementById("grid");
-                        var str = cleanUrl;
-                        readableStr = str.replace(/[^a-zA-Z ]/g, " ");
+                            const headlineInfo = headlineStats[key];
+                            const headlineUrl = headlineInfo.affiliate_info4;
+                            const revenue = parseInt(headlineInfo.revenue);
+                            const cleanUrl = decodeURIComponent(headlineUrl);
+                            const itemGrid = $("#grid");
+                            const str = cleanUrl;
+                            readableStr = str.replace(/[^a-zA-Z ]/g, " ");
 
-                        //Some urls are not valid, so those need to get discarded or modified
-                        if (cleanUrl.startsWith("http") != true && cleanUrl != "") {
-                            // console.log(str + " brought " + revenue);
-                            //Create a new div element
-                            let newDiv = document.createElement('div');
-                            let colors = ['#feebe2', '#fcc5c0', '#fa9fb5', '#f768a1', '#c51b8a', '#7a0177'];
-                            var randomColor = Math.floor(Math.random() * colors.length);
-                            newDiv.className = "grid-item";
-                            newDiv.textContent = readableStr;
-                            newDiv.style.backgroundColor = colors[randomColor];
+                            //Some urls are not valid, so those need to get discarded or modified
+                            if (cleanUrl.startsWith("http") != true && cleanUrl != "") {
+                                // console.log(str + " brought " + revenue);
+                                //Create a new div element
+                                let newDiv = document.createElement('div');
+                                let colors = ['#feebe2', '#fcc5c0', '#fa9fb5', '#f768a1', '#c51b8a',
+                                    '#7a0177'
+                                ];
+                                const randomColor = Math.floor(Math.random() * colors.length);
+                                newDiv.className = "grid-item";
+                                newDiv.textContent = readableStr;
+                                newDiv.style.backgroundColor = colors[randomColor];
 
-                            if (revenue >= 150) {
-                                newDiv.classList.add("grid-item--5");
-                            } else if (revenue <= 150 && revenue > 75) {
-                                newDiv.classList.add("grid-item--4");
-                            } else if (revenue <= 74 && revenue > 50) {
-                                newDiv.classList.add("grid-item--3");
-                            } else if (revenue <= 49 && revenue > 20) {
-                                newDiv.classList.add("grid-item--2");
-                            } else if (revenue <= 20 && revenue > -1) {
-                                newDiv.classList.add("grid-item--1");
-                            } else {}
-                            // Now that sizing is all done, we will put these in the grid and have packery make it look cool
-                            document.querySelector(".grid").appendChild(newDiv);
-                            // console.log(newDiv.classList + " representing " + str + " brought " + revenue);
-                            var pckry = new Packery('.grid', {
-                                itemSelector: '.grid-item',
-                                gutter: 0
-                            });
-                        } else {
-                            // console.log("this headline url is not valid " + cleanUrl);
-                        }
+                                if (revenue >= 70) {
+                                    newDiv.classList.add("grid-item--5");
+                                } else if (revenue <= 70 && revenue > 60) {
+                                    newDiv.classList.add("grid-item--4");
+                                } else if (revenue <= 60 && revenue > 55) {
+                                    newDiv.classList.add("grid-item--3");
+                                } else if (revenue <= 55 && revenue > 1) {
+                                    newDiv.classList.add("grid-item--2");
+                                } else if (revenue <= 1 && revenue > -1) {
+                                    newDiv.classList.add("grid-item--1");
+                                } else {}
+                                // Now that sizing is all done, we will put these in the grid and have packery make it look cool
+                                document.querySelector(".grid").appendChild(newDiv);
+                                //console.log(newDiv.classList + " representing " + str + " brought " + revenue);
+                                const pckry = new Packery('.grid', {
+                                    itemSelector: '.grid-item',
+                                    gutter: 0
+                                });
+                            } else {
+                                // console.log("this headline url is not valid " + cleanUrl);
+                            }
 
-                    })
-            })
-    }).catch(function(error) {
-        console.log(JSON.stringify("Error: " + error));
-    });
+                        })
+                })
+        }).catch(function (error) {
+            console.log(JSON.stringify("Error: " + error));
+        });
 </script>

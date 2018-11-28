@@ -185,6 +185,18 @@
     slideTitle.classList.add('hidden-title-area');
 
     // Setting up for the API calls
+            function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
     const today = new Date(new Date().getTime());
     const todayHours = today.getHours();
     // Setting up for calculations
@@ -196,9 +208,9 @@
 
     // Getting exact time yesterday so data is in past 24 hours
     const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
-    const fields = "&fields[]=Stat.revenue&fields[]=Stat.affiliate_info4&groups[]=Stat.offer_id&groups[]=Stat.affiliate_id&sort[Stat.revenue]=desc&limit=0";
-    const queryStart = '&data_start=' + yesterday;
-    const queryStop = '&data_end=' + today;
+    const fields = "&fields[]=Stat.affiliate_id&fields[]=Stat.revenue&fields[]=Stat.affiliate_info4&filters[Stat.revenue][conditional]=GREATER_THAN&filters[Stat.revenue][values]=0&limit=1000000000&page=1";
+    const queryStart = '&data_start=' + formatDate(yesterday);
+    const queryStop = '&data_end=' + formatDate(today);
     const url = 'https://tsh.api.hasoffers.com/Apiv3/json?NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe&Target=Report&Method=getStats' + fields + queryStart + queryStop;
 
     fetch(url)

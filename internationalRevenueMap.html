@@ -32,14 +32,26 @@
 </body>
 
 <script>
+
     const today = new Date(new Date().getTime());
     const todayHours = today.getHours();
 
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
     // Getting exact time yesterday so data is in past 24 hours
     const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
     const fieldsFiltersAndGrouping = "&Target=Report&Method=getStats&fields[]=Stat.country_code&fields[]=Stat.revenue&filters[Stat.revenue][conditional]=GREATER_THAN&filters[Stat.revenue][values]=0&sort[Stat.country_code]=asc&limit=0";
-    const queryStart = '&data_start=' + yesterday;
-    const queryStop = '&data_end=' + today;
+    const queryStart = '&data_start=' + formatDate(yesterday);
+    const queryStop = '&data_end=' + formatDate(today);
     const url = 'https://api.hasoffers.com/Apiv3/json?NetworkId=tsh&NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe' + fieldsFiltersAndGrouping + queryStart + queryStop;
 
     fetch(url)
@@ -50,11 +62,11 @@
         //console.log(jsonData);
 
         max = d3.max(jsonData.map(a => Number(a.Stat.revenue)));
-        console.log(max);
+        //console.log(max);
         min = d3.min(jsonData.map(a => Number(a.Stat.revenue)));
-        console.log(min);
+        //console.log(min);
         mean = d3.mean(jsonData.map(a => Number(a.Stat.revenue)));
-        console.log(mean);
+        //console.log(mean);
 
 
         // var colors = d3.scale.quantize()
@@ -334,7 +346,7 @@
             _.each(jsonData, function(el) {
                 const revenue = _.toInteger(el["Stat"]["revenue"])
                 const countryCode = cleanCountryCode(el["Stat"]["country_code"])
-                console.log(countryCode + " has " + revenue + " revenue");
+                //console.log(countryCode + " has " + revenue + " revenue");
 
                 h[countryCode] = {
                     fillKey: colors(revenue)

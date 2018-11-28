@@ -10,15 +10,14 @@
 
     <!-- watermarks styling -->
     <style>
-
         * {
             cursor: none !important;
         }
-        
+
         body {
             background-color: white;
         }
-        
+
         .company-watermark {
             width: 110%;
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
@@ -29,10 +28,10 @@
         }
 
         /* for when bigger logo is loading */
-                .hidden-company-watermark {
+        .hidden-company-watermark {
             display: none;
         }
-        
+
         .watermark {
             position: fixed;
             right: 25px;
@@ -44,36 +43,37 @@
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
             z-index: 100;
         }
-        
+
         .time-area {
             font-size: 70px;
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
         }
-        
+
         .degree-symbol {
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
             font-size: 36px;
         }
+
         /* for a font-awesome weather icon in place of the openweather api ones */
-        
+
         .wi {
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
             margin-right: 20px;
             color: white;
             font-size: 36px;
         }
-        
+
         .temperature-area {
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
             font-size: 36px;
         }
-        
+
         .date-area {
             color: white;
             font-family: "Source Sans Pro", Helvetica, sans-serif;
             visibility: invisible;
         }
-        
+
         .title-area {
             font-size: 65px;
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .75)) !important;
@@ -82,23 +82,23 @@
             bottom: 25px;
         }
 
-        /* for when images/headlines load to hide the title for better ui */        
+        /* for when images/headlines load to hide the title for better ui */
         .hidden-title-area {
             display: none;
         }
-        
+
         #clicks-area {
             color: white;
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
             font-size: 36px;
         }
-        
+
         #conversions-area {
             color: white;
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
             font-size: 36px;
         }
-        
+
         #impressions-area {
             color: white;
             filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5));
@@ -126,7 +126,8 @@
     <!-- packery getting loaded now to make things faster -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/packery/2.1.1/packery.pkgd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/then-request/2.2.0/request.js"></script>
-    <script src="http://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+        crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
     <script src="lodash.js"></script>
@@ -182,7 +183,8 @@
 
         <!-- weather/time watermark -->
         <div class="watermark" style="margin-right: 25px; margin-bottom: 35px;">
-            <span class="temperature-area" style="filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5))"></span><span class="degree-symbol">°</span></span>
+            <span class="temperature-area" style="filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5))"></span><span
+                class="degree-symbol">°</span></span>
             <i class="weather-area" style="filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5)) "></i>
             <span class="time-area" style="filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, .5)); font-size:70px;"></span>
         </div>
@@ -194,7 +196,6 @@
     </div>
 
     <script>
-
         // get dates to make calls
         const today = new Date(new Date().getTime());
         // Setting up for the API calls and other stuff we need for the whole application
@@ -212,7 +213,7 @@
         fetch(weatherUrl)
             .then((resp) => resp.json())
 
-        .then(function(data) {
+            .then(function (data) {
 
                 // Get the time to show
                 function formatMinute(i) {
@@ -238,14 +239,16 @@
                     }
                     m = formatMinute(m);
                     document.getElementsByClassName('time-area')[0].innerHTML = h + ":" + m;
-                    t = setTimeout(function() {
+                    t = setTimeout(function () {
                         checkTimeAndDate()
                     }, 500);
 
                     var formattedDate = new Date(),
                         date = formattedDate.getDate(),
-                        weekdays = "Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday".split(",")[formattedDate.getDay()],
-                        month = "January,February,March,April,May,June,July,August,September,October,November,December"
+                        weekdays = "Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday".split(
+                            ",")[formattedDate.getDay()],
+                        month =
+                        "January,February,March,April,May,June,July,August,September,October,November,December"
                         .split(",")[formattedDate.getMonth()];
 
                     function nth(d) {
@@ -295,7 +298,7 @@
                 window.show = document.getElementsByClassName('watermark');
                 // window.show = document.getElementsByClassName('company-watermark');
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.log(JSON.stringify("Error: " + error));
             });
 
@@ -303,10 +306,24 @@
         /***************************************************************
          * HasOffers API - testing lodaing scattering
          ***************************************************************/
-        const fields = "&Target=Report&Method=getStats&fields[]=Stat.conversions&fields[]=Stat.clicks&fields[]=Stat.impressions";
-        const queryStart = '&data_start=' + yesterday;
-        const queryStop = '&data_end=' + today;
-        const url = 'https://api.hasoffers.com/Apiv3/json?NetworkId=tsh&NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe' + fields + queryStart + queryStop;
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
+        const fields =
+            "&Target=Report&Method=getStats&fields[]=Stat.conversions&fields[]=Stat.clicks&fields[]=Stat.impressions";
+        const queryStart = '&data_start=' + formatDate(yesterday);
+        const queryStop = '&data_end=' + formatDate(yesterday);
+        const url = 'https://api.hasoffers.com/Apiv3/json?NetworkId=tsh&NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe' +
+            fields + queryStart + queryStop;
 
         // Setting up for calculations
         oneHourInMilliseconds = 3600000;
@@ -320,7 +337,7 @@
         // This is going to be refactored probably
         fetch(url)
             .then((resp) => resp.json())
-            .then(function(data) {
+            .then(function (data) {
                 const jsonData = data.response.data.data;
 
                 Object.keys(jsonData)
@@ -369,7 +386,8 @@
                                     document.getElementById("clicks-area").innerHTML;
                                 }
 
-                                const conversionsInterval = setInterval(conversionsIntervalTimer, conversionUpdateRate);
+                                const conversionsInterval = setInterval(conversionsIntervalTimer,
+                                    conversionUpdateRate);
 
                                 function conversionsIntervalTimer() {
                                     const conversionsArea = document.getElementById('conversions-area');
@@ -381,7 +399,8 @@
                                 }
 
 
-                                const impressionsInterval = setInterval(impressionsIntervalTimer, impressionUpdateRate);
+                                const impressionsInterval = setInterval(impressionsIntervalTimer,
+                                    impressionUpdateRate);
 
                                 function impressionsIntervalTimer() {
                                     const impressionsArea = document.getElementById('impressions-area');
@@ -435,7 +454,7 @@
 
                 window.onload = updateStats();
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.log(JSON.stringify(error));
             });
 
@@ -443,9 +462,9 @@
         var minute = new Date().getMinutes(),
             nextRefresh = (60 - (minute % 30)) * 60 * 1000;
 
-        setTimeout(function() {
+        setTimeout(function () {
             location.reload();
-        }, nextRefresh); 
+        }, nextRefresh);
     </script>
 
     <script>
@@ -475,39 +494,37 @@
             //Reveal's deps
             dependencies: [{
                     src: 'lib/js/classList.js',
-                    condition: function() {
+                    condition: function () {
                         return !document.body.classList;
                     }
-                }, {
-                    src: '/node_modules/reveald3/reveald3.js'
-
-                }, {
-                    src: '/node_modules/reveald3/demo/d3-fig/d3.v4.min.js'
-
-                }, {
+                },
+                {
+                    src: 'node_modules/reveald3/reveald3.js'
+                },
+                {
                     src: '/node_modules/reveald3/demo/d3-fig/js/d3.v4.min.js'
                 },
 
                 //external to make individal slide html files
                 {
                     src: 'node_modules/reveal_external/external/external.js',
-                    condition: function() {
+                    condition: function () {
                         return !!document.querySelector('[data-external],[data-external-replace]');
                     }
                 }, {
                     src: 'plugin/markdown/marked.js',
-                    condition: function() {
+                    condition: function () {
                         return !!document.querySelector('[data-markdown]');
                     }
                 }, {
                     src: 'plugin/markdown/markdown.js',
-                    condition: function() {
+                    condition: function () {
                         return !!document.querySelector('[data-markdown]');
                     }
                 }, {
                     src: 'plugin/highlight/highlight.js',
                     async: true,
-                    callback: function() {
+                    callback: function () {
                         hljs.initHighlightingOnLoad();
                     }
                 }

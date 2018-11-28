@@ -57,12 +57,26 @@
 
 <script>
     const today = new Date(new Date().getTime());
+    //console.log(today);
     const todayHours = today.getHours();
     // Getting exact time yesterday so data is in past 24 hours
     const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
-    const fieldsFiltersAndGrouping = "&Target=Report&Method=getStats&fields[]=Stat.country_code&fields[]=Stat.clicks&filters[Stat.clicks][conditional]=GREATER_THAN&filters[Stat.clicks][values]=0&sort[Stat.country_code]=asc&limit=0";
-    const queryStart = '&data_start=' + yesterday;
-    const queryStop = '&data_end=' + today;
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
+    const fieldsFiltersAndGrouping = "&Target=Report&Method=getStats&fields[]=Stat.clicks&fields[]=Stat.country_code&sort[Stat.country_code]=asc&limit=10000000000000&page=1";
+    const queryStart = '&data_start=' + formatDate(yesterday);
+    const queryStop = '&data_end=' + formatDate(today);
     const url = 'https://api.hasoffers.com/Apiv3/json?NetworkId=tsh&NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe' + fieldsFiltersAndGrouping + queryStart + queryStop;
 
     fetch(url)
@@ -70,7 +84,6 @@
 
     .then(function(data) {
         var jsonData = data.response.data.data;
-        //console.log(jsonData);
 
         max = d3.max(jsonData.map(a => Number(a.Stat.clicks)));
         // console.log(max);
@@ -359,7 +372,7 @@
                     fillKey: colors(clicks)
                 }
             })
-            console.log(h);
+            //console.log(h);
             return h
         }
 

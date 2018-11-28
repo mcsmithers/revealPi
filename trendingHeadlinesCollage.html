@@ -1,11 +1,11 @@
-<!DOCTYPE html> <meta charset="utf-8">
+<!DOCTYPE html>
+<meta charset="utf-8">
 
 <head>
     <title>Trending headlines</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/packery/2.1.1/packery.pkgd.min.js"></script>
 
@@ -223,18 +223,19 @@
     <!-- loader -->
     <div class="base-styles">
         <div id="top-images-loader">
-            <img src="loading-logo.png" id="loading-logo"><br/>
+            <img src="loading-logo.png" id="loading-logo"><br />
         </div>
     </div>
     <!-- content -->
     <div class="grid"></div>
 </body>
 <script type="text/javascript">
-    let loader = document.getElementsByClassName('base-styles');
-    const companyLogo = parent.document.getElementsByClassName('company-watermark')[0];
-    const slideTitle = parent.document.getElementsByClassName('title-area')[5];
-    companyLogo.classList.add('hidden-company-watermark');
-    slideTitle.classList.add('hidden-title-area');
+    //let loader = document.getElementsByClassName('base-styles');
+    let loader = $('.base-styles');
+    const companyLogo = $('.company-watermark');
+    const slideTitle = $('.title-area');
+    companyLogo.addClass('hidden-company-watermark');
+    slideTitle.addClass('hidden-title-area');
 
     // Setting up for calculations and calls
     oneHourInMilliseconds = 3600000;
@@ -246,96 +247,114 @@
     conversionUpdateRate = 200;
 
     // Getting exact time yesterday so data is in past 24 hours
-    const yesterday = new Date(new Date().setDate(new Date().getDate()-1));
-    const fields = "&fields[]=Stat.revenue&fields[]=Stat.affiliate_info4&groups[]=Stat.offer_id&groups[]=Stat.affiliate_id&sort[Stat.revenue]=desc&limit=0";
-    const queryStart = '&data_start=' + yesterday;
-    const queryStop = '&data_end=' + today;
-    const url = 'https://tsh.api.hasoffers.com/Apiv3/json?NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe&Target=Report&Method=getStats' + fields + queryStart + queryStop;
+
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+    const yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
+    const fields =
+        "&fields[]=Stat.affiliate_info4&fields[]=Stat.revenue&fields[]=Stat.offer_id&sort[Stat.country_code]=asc&limit=1000000000&page=1";
+    const queryStart = '&data_start=' + formatDate(yesterday);
+    const queryStop = '&data_end=' + formatDate(today);
+    const url =
+        'https://tsh.api.hasoffers.com/Apiv3/json?NetworkToken=NETXqfUQYBBISOBfs6ixG8BeFg5sKe&Target=Report&Method=getStats' +
+        fields + queryStart + queryStop;
 
     fetch(url)
         .then((resp) => resp.json())
 
-    .then(function(data) {
+        .then(function (data) {
 
-        var jsonData = data.response.data.data;
+            var jsonData = data.response.data.data;
 
-        Object.keys(jsonData)
-            .forEach(key => {
-                const headlineStats = jsonData[key];
+            Object.keys(jsonData)
+                .forEach(key => {
+                    const headlineStats = jsonData[key];
 
-                // Let's get each headline's info first
-                Object.keys(headlineStats)
-                    .forEach(key => {
-                        loader[0].classList.add('fadeout');
-                        companyLogo.classList.remove('hidden-company-watermark');
-                        slideTitle.classList.remove('hidden-title-area');
+                    // Let's get each headline's info first
+                    Object.keys(headlineStats)
+                        .forEach(key => {
+                            loader.addClass('fadeout');
+                            companyLogo.remove('hidden-company-watermark');
+                            slideTitle.remove('hidden-title-area');
 
-                        const headlineInfo = headlineStats[key];
-                        var headlineUrl = headlineInfo.affiliate_info4;
-                        var revenue = parseInt(headlineInfo.revenue);
-                        var cleanUrl = decodeURIComponent(headlineUrl);
-                        var itemGrid = document.getElementById("grid");
-                        var str = cleanUrl;
-                        readableStr = str.replace(/[^a-zA-Z ]/g, " ");
+                            const headlineInfo = headlineStats[key];
+                            var headlineUrl = headlineInfo.affiliate_info4;
+                            var revenue = parseInt(headlineInfo.revenue);
+                            var cleanUrl = decodeURIComponent(headlineUrl);
+                            var itemGrid = $("#grid");
+                            var str = cleanUrl;
+                            readableStr = str.replace(/[^a-zA-Z ]/g, " ");
 
-                        // Now let's figure out the revenue per hour
-                        revenuePerHour = revenue / todayHours;
+                            // Now let's figure out the revenue per hour
+                            revenuePerHour = revenue / todayHours;
 
-                        // revenue per hour speed up or slow down with the update rate
-                        deltaRevenue = oneHourInMilliseconds / conversionUpdateRate;
+                            // revenue per hour speed up or slow down with the update rate
+                            deltaRevenue = oneHourInMilliseconds / conversionUpdateRate;
 
-                        // FTime to increment the numbers so we can see where the trend is going
-                        incrementrevenue = revenuePerHour / deltaRevenue;
+                            // FTime to increment the numbers so we can see where the trend is going
+                            incrementrevenue = revenuePerHour / deltaRevenue;
 
-                        // Finally that we have the trend, so we will start showing the numbers changing
-                        const revenueInterval = setInterval(revenueIntervalTimer, conversionUpdateRate);
+                            // Finally that we have the trend, so we will start showing the numbers changing
+                            const revenueInterval = setInterval(revenueIntervalTimer, conversionUpdateRate);
 
-                        function revenueIntervalTimer() {
-                            countingrevenue = revenue += incrementrevenue;
-                            roundedCountingrevenue = Math.round(countingrevenue);
-                            formattedRoundCountrevenue = roundedCountingrevenue.toLocaleString();
-                        }
-                        //Some urls are not valid, so those need to get discarded or modified
-                        if (cleanUrl.startsWith("http") != true && cleanUrl != "" && revenue >= -1) {
-                            // console.log(revenuePerHour)
-                            //Create a new div element
-                            let newDiv = document.createElement('div');
-                            let colors = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c'];
-                            var randomColor = Math.floor(Math.random() * colors.length);
-                            newDiv.className = "grid-item";
-                            newDiv.textContent = readableStr;
-                            newDiv.style.backgroundColor = colors[randomColor];
-                            // console.log(newDiv.classList + " brought " + revenuePerHour);
+                            function revenueIntervalTimer() {
+                                countingrevenue = revenue += incrementrevenue;
+                                roundedCountingrevenue = Math.round(countingrevenue);
+                                formattedRoundCountrevenue = roundedCountingrevenue.toLocaleString();
+                            }
+                            //Some urls are not valid, so those need to get discarded or modified
+                            if (cleanUrl.startsWith("http") != true && cleanUrl != "" && revenue >= -1) {
+                                // console.log(revenuePerHour)
+                                //Create a new div element
+                                let newDiv = document.createElement('div');
+                                let colors = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd',
+                                    '#08519c'
+                                ];
+                                var randomColor = Math.floor(Math.random() * colors.length);
+                                newDiv.className = "grid-item";
+                                newDiv.textContent = readableStr;
+                                newDiv.style.backgroundColor = colors[randomColor];
+                                 //console.log(newDiv.classList + " brought " + revenuePerHour);
 
-                            if (revenuePerHour >= 9) {
-                                newDiv.classList.add("grid-item--5");
-                            } else if (revenuePerHour >= 7 && revenuePerHour <= 9) {
-                                newDiv.classList.add("grid-item--4");
-                            } else if (revenuePerHour >= 3 && revenuePerHour <= 6) {
-                                newDiv.classList.add("grid-item--3");
-                            } else if (revenuePerHour >= 2 && revenuePerHour <= 1) {
-                                newDiv.classList.add("grid-item--2");
-                            } else if (revenuePerHour >= -1) {
-                                newDiv.classList.add("grid-item--1");
-                            } else {}
-                            // console.log(newDiv.classList + " brought " + revenuePerHour);
+                                if (revenuePerHour >= 9) {
+                                    newDiv.classList.add("grid-item--5");
+                                } else if (revenuePerHour >= 7 && revenuePerHour <= 9) {
+                                    newDiv.classList.add("grid-item--4");
+                                } else if (revenuePerHour >= 3 && revenuePerHour <= 6) {
+                                    newDiv.classList.add("grid-item--3");
+                                } else if (revenuePerHour >= 2 && revenuePerHour <= 1) {
+                                    newDiv.classList.add("grid-item--2");
+                                } else if (revenuePerHour >= -1) {
+                                    newDiv.classList.add("grid-item--1");
+                                } else {}
+                                // console.log(newDiv.classList + " brought " + revenuePerHour);
 
-                            // Now that sizing is all done, we will put these in the grid and have packery make it look cool
-                            document.querySelector(".grid").appendChild(newDiv);
-                            var pckry = new Packery('.grid', {
-                                itemSelector: '.grid-item',
-                                gutter: 0
-                            });
+                                // Now that sizing is all done, we will put these in the grid and have packery make it look cool
+                                document.querySelector(".grid").appendChild(newDiv);
+                                var pckry = new Packery('.grid', {
+                                    itemSelector: '.grid-item',
+                                    gutter: 0
+                                });
 
-                        } else {
-                            // console.log("this headline url is not valid " + cleanUrl);
-                        }
+                            } else {
+                                // console.log("this headline url is not valid " + cleanUrl);
+                            }
 
-                    })
-            })
+                        })
+                })
 
 
-    }).catch(function(error) {
-        console.log(JSON.stringify("Error: " + error));
-    });
+        }).catch(function (error) {
+            console.log(JSON.stringify("Error: " + error));
+        });
 </script>
